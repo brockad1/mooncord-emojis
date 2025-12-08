@@ -6,8 +6,7 @@ on:
     branches:
       - RTX-on
     paths:
-      - '**.gif'
-      - '**.GIF'
+      - '**/feelsweakman.gif'
 
 jobs:
   coalesce:
@@ -22,8 +21,8 @@ jobs:
 
       - name: Coalesce GIF files
         run: |
-          # Find all GIF files
-          find . -type f \( -iname "*.gif" \) | while read gif; do
+          # Find the specific GIF file
+          find . -type f -name "feelsweakman.gif" | while read gif; do
             echo "Processing: $gif"
 
             # Check if GIF has multiple frames
@@ -48,21 +47,3 @@ jobs:
               echo "  Single frame or not animated, skipping"
             fi
           done
-
-      - name: Check for changes
-        id: changes
-        run: |
-          if [ -n "$(git status --porcelain)" ]; then
-            echo "has_changes=true" >> $GITHUB_OUTPUT
-          else
-            echo "has_changes=false" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Commit changes
-        if: steps.changes.outputs.has_changes == 'true'
-        run: |
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
-          git add -A
-          git commit -m "Coalesce animated GIF frames"
-          git push
